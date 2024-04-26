@@ -1,0 +1,77 @@
+ul {
+	list-style-type: none;
+}
+.custom-button {
+	background-color: rgb(25, 118, 162);
+	border-color: rgb(25, 118, 162);
+}
+.custom-button:hover {
+	background-color: rgb(22, 101, 138);
+	border-color: rgb(22, 101, 138);
+}
+.custom-form {
+	background-color: #FFFEF6;
+	border: none;
+	border-radius: 12px;
+	padding: 40px;
+	box-shadow: 2px 2px 5px rgba(73, 73, 73, 0.3);
+	min-width: 400px;
+	min-height: 500px;
+	width: 50%;
+}
+.custom-font{
+	font-family: 'Lato', sans-serif;
+}
+
+.label-custom{
+	font-family: 'Lato', sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+}
+.autoExpand {
+  resize: none;
+  overflow: hidden;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 0;
+}
+
+input[type='number'] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+.bottom-button {
+	margin-top: auto;
+}
+
+.iconContr{
+	color: rgba(45, 96, 115, 1);
+	font-size: 1.4rem;
+}
+.botoncardContr {
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	background-color: transparent;
+	border: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: rgba(45, 96, 115, 1);
+}
+
+.botoncardContr:hover {
+	background-color: transparent;
+}
+
+.customCard {
+	background-color: white;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+	border-radius: 10px;
+	margin: 15px;
+}
+

@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models\GestDepartamento;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class departamento extends Model
+{
+    use HasFactory;
+    public $timestamps = false;
+    protected $fillable = [
+        'nombre_departamento',
+        'numero_habitaciones',
+        'numero_personas',
+        'superficie',
+        'disponibilidad',
+        'amoblado',
+        'descripcion_departamento',
+        'piso',
+        'imagen_departamento',
+        'edificio_id'
+    ];
+    public function edificio()
+    {
+        return $this->belongsTo(edificio::class);
+    }
+}

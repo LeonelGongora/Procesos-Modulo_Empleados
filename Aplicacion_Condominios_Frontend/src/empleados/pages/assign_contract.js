@@ -1,0 +1,103 @@
+import React, { useEffect, useState } from 'react';
+
+import axios from 'axios';
+import Table from 'react-bootstrap/Table';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+import Cookies from 'universal-cookie';
+import '../css/contract_register_style.css'
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+
+const cookies = new Cookies();
+
+function AssignContract() {
+
+  const [empleados, setEmpleados] = useState([]);
+  
+  useEffect(()=>{
+    getEmpleados();
+  }, []);
+
+  const getEmpleados = async () => {
+
+    const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_all_employees`);
+    console.log(respuesta)
+    setEmpleados(respuesta.data.empleados)
+    console.log(empleados)
+  }
+
+  const eliminarEmpleado = (id) => {
+    console.log(id);
+
+    const url = `http://127.0.0.1:8000/api/delete_employee/${id}`; 
+      axios.delete(url).then(respuesta => {
+        if(respuesta.data.status === 200){
+          console.log(respuesta);
+          window.location.reload();
+        }
+    })
+  }
+
+  const editarInformacionEmpleado = (id)  => {
+    console.log(id)
+    cookies.set("id_empleado_seleccionado", id, { path: "/" });
+    window.location.href = "./contractRegister";
+  }
+
+  const firmarContrato = (id)  => {
+    console.log(id)
+    cookies.set("id_empleado_seleccionado", id, { path: "/" });
+    window.location.href = "./contractRegister";
+  }
+
+  return (
+    <>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossOrigin="anonymous"
+      />
+
+      
+
+      <Container className="mt-5 mb-5 text-light ">
+        <Table hover>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>CI</th>
+              <th>Estado de Contrato</th>
+              <th>Contrato</th>
+            </tr>
+          </thead>
+          <tbody>
+            {empleados.map((empleado) => {
+              return (
+                <tr >
+                  <td >{empleado.nombre}</td>
+                  <td>{empleado.apellido}</td>
+                  <td>{empleado.ci}</td>
+                  <td>{empleado.estado_contrato}</td>
+                  <td>
+
+                  {empleado.estado_contrato === "Contratado" ? (
+                          <div> Contrato {empleado.contracts[0].tipo_contrato}</div>
+                        ) : (
+                            <Button variant="danger" onClick={() => firmarContrato(empleado)} style={{ backgroundColor: '#65B8A6', borderColor: '#65B8A6' }}><AddIcon/></Button>
+                        )}
+                        </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Container>
+      
+    </>
+  );
+}
+
+export default AssignContract;
