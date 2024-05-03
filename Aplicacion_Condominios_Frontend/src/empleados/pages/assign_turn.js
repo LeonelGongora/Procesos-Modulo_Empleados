@@ -1,55 +1,67 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import axios from 'axios';
-import Table from 'react-bootstrap/Table';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import Cookies from 'universal-cookie';
-import '../css/contract_register_style.css'
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import axios from "axios";
+import Table from "react-bootstrap/Table";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Cookies from "universal-cookie";
+import "../css/contract_register_style.css";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import {
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBInput,
+  MDBRadio,
+  MDBCheckbox
+}
+from 'mdb-react-ui-kit';
 
 const cookies = new Cookies();
 
 function AssignTurn() {
-
   const [empleados, setEmpleados] = useState([]);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     getEmpleados();
   }, []);
 
   const getEmpleados = async () => {
-
-    const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_all_employees`);
-    console.log(respuesta)
-    setEmpleados(respuesta.data.empleados)
-    console.log(empleados)
-  }
+    const respuesta = await axios.get(
+      `http://127.0.0.1:8000/api/get_all_employees`
+    );
+    console.log(respuesta);
+    setEmpleados(respuesta.data.empleados);
+    console.log(empleados);
+  };
 
   const eliminarEmpleado = (id) => {
     console.log(id);
 
-    const url = `http://127.0.0.1:8000/api/delete_employee/${id}`; 
-      axios.delete(url).then(respuesta => {
-        if(respuesta.data.status === 200){
-          console.log(respuesta);
-          window.location.reload();
-        }
-    })
-  }
+    const url = `http://127.0.0.1:8000/api/delete_employee/${id}`;
+    axios.delete(url).then((respuesta) => {
+      if (respuesta.data.status === 200) {
+        console.log(respuesta);
+        window.location.reload();
+      }
+    });
+  };
 
-  const editarInformacionEmpleado = (id)  => {
-    console.log(id)
+  const editarInformacionEmpleado = (id) => {
+    console.log(id);
     cookies.set("id_empleado_seleccionado", id, { path: "/" });
     window.location.href = "./contractRegister";
-  }
+  };
 
-  const asignarTurnos = (id)  => {
-    console.log(id)
+  const asignarTurnos = (id) => {
+    console.log(id);
     cookies.set("id_empleado_seleccionado", id, { path: "/" });
     window.location.href = "./turnRegister";
-  }
+  };
 
   return (
     <>
@@ -74,23 +86,29 @@ function AssignTurn() {
           <tbody>
             {empleados.map((empleado) => {
               return (
-                <tr >
-                  <td >{empleado.nombre}</td>
+                <tr>
+                  <td>{empleado.nombre}</td>
                   <td>{empleado.apellido}</td>
                   <td>{empleado.ci}</td>
-                  <td>{empleado.contracts[0].area}</td>
+                  <td>Area</td>
                   <td>
-
-                            <Button variant="danger" onClick={() => asignarTurnos(empleado)} style={{ backgroundColor: '#65B8A6', borderColor: '#65B8A6' }}><AddIcon/></Button>
-
-                        </td>
+                    <Button
+                      variant="danger"
+                      onClick={() => asignarTurnos(empleado)}
+                      style={{
+                        backgroundColor: "#65B8A6",
+                        borderColor: "#65B8A6",
+                      }}
+                    >
+                      <AddIcon /> 
+                    </Button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </Table>
       </Container>
-      
     </>
   );
 }
