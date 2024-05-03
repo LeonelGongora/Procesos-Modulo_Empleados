@@ -11,7 +11,7 @@ export default function ListPage() {
 
   useEffect(() => {
     const fetchCommonAreas = async () => {
-      const response = await fetch("http://localhost:8000/api/areas-comunes/");
+      const response = await fetch("http://localhost:8000/api/common-areas/");
       const {
         data: { commonAreas },
       } = await response.json();

@@ -32,4 +32,9 @@ class CommonArea extends Model
     {
         return $this->hasMany(Policy::class, 'id_common_area');
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'id_common_area');
+    }
 }

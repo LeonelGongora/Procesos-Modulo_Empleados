@@ -21,10 +21,8 @@ function AssignTurn() {
 
   const getEmpleados = async () => {
 
-    const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_all_employees`);
-    console.log(respuesta)
+    const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_employee_with_contract`);
     setEmpleados(respuesta.data.empleados)
-    console.log(empleados)
   }
 
   const eliminarEmpleado = (id) => {
@@ -74,23 +72,29 @@ function AssignTurn() {
           <tbody>
             {empleados.map((empleado) => {
               return (
-                <tr >
-                  <td >{empleado.nombre}</td>
+                <tr>
+                  <td>{empleado.nombre}</td>
                   <td>{empleado.apellido}</td>
                   <td>{empleado.ci}</td>
                   <td>{empleado.contracts[0].area}</td>
                   <td>
-
-                            <Button variant="danger" onClick={() => asignarTurnos(empleado)} style={{ backgroundColor: '#65B8A6', borderColor: '#65B8A6' }}><AddIcon/></Button>
-
-                        </td>
+                    <Button
+                      variant="danger"
+                      onClick={() => asignarTurnos(empleado)}
+                      style={{
+                        backgroundColor: "#65B8A6",
+                        borderColor: "#65B8A6",
+                      }}
+                    >
+                      <AddIcon />
+                    </Button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </Table>
       </Container>
-      
     </>
   );
 }

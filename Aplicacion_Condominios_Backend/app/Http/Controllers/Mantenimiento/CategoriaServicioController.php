@@ -46,3 +46,5 @@ class CategoriaServicioController extends Controller
         return response()->json(["message"=>"Registro eliminado"],200);
     }
 }
+
+// prueba comentario

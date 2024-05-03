@@ -11,7 +11,7 @@ import {
   Button,
 } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-/// prueba para subir al segundo repo
+
 const endpoint = "http://localhost:8000/api";
 
 class AgregarEquipo extends Component {
@@ -22,6 +22,7 @@ class AgregarEquipo extends Component {
       descripcion_equipo: "",
       costo_equipo: "",
       area_comun_nombre: "",
+      tipo_equipo_danado: "", // Nuevo estado para el checkbox
       areasComunes: [], // Inicializamos como un array vacío
       errors: {},
     };
@@ -42,8 +43,10 @@ class AgregarEquipo extends Component {
   };
 
   handleInput = (e) => {
+    const { name, value, type } = e.target;
+    const val = type === 'checkbox' ? (e.target.checked ? value : '') : value.trim(); // Limpiar la selección si es un checkbox
     this.setState({
-      [e.target.name]: e.target.value,
+      [name]: val,
     });
   };
 
@@ -67,6 +70,7 @@ class AgregarEquipo extends Component {
       validationErrors.area_comun_nombre = "Por favor seleccione un área común";
     }
 
+
     this.setState({ errors: validationErrors });
 
     if (Object.keys(validationErrors).length === 0) {
@@ -76,13 +80,26 @@ class AgregarEquipo extends Component {
         descripcion: this.state.descripcion_equipo,
         costo: this.state.costo_equipo,
         area_comun_nombre: this.state.area_comun_nombre,
+        tipo_equipo_danado: this.state.tipo_equipo_danado, // Incluir el nuevo estado en los datos
       };
+      
+      const url2 = `${endpoint}/agregarEquipo`;
+      const data2 = {
+        catnombre: this.state.nombre_equipo,
+        catdescripcion: this.state.descripcion_equipo,
+      };
+      
 
       try {
-        const response = await axios.post(url, data);
-        console.log("Equipo guardado exitosamente:", response.data);
-        window.location.href = "./pre-aviso"; // Reemplaza "./otra-pestaña" con la URL a la que deseas redirigir
-
+        if(this.state.tipo_equipo_danado === "Reposición"){
+          const response = await axios.post(url, data);
+          console.log("Equipo guardado exitosamente:", response.data);
+          window.location.href = "./gestion-equipo"; // Reemplaza "./otra-pestaña" con la URL a la que deseas redirigir
+        }else{
+          const response = await axios.post(url2, data2);
+          console.log("Equipo guardado exitosamente:", response.data);
+          window.location.href = "./gestion-equipo"; // Reemplaza "./otra-pestaña" con la URL a la que deseas redirigir
+        }
       } catch (error) {
         console.error("Error al guardar el equipo:", error);
       }
@@ -95,7 +112,7 @@ class AgregarEquipo extends Component {
         <Row>
           <Col sm={12}>
             <h2 className="text-center mb-5">Agregar equipo dañado</h2>
-            <Form onSubmit={this.handleSubmit}>
+            <Form onSubmit={this.handleSubmit}> 
               <FormGroup className="mb-4">
                 <Label className="label-custom">Nombre del equipo dañado</Label>
                 <Input
@@ -121,7 +138,35 @@ class AgregarEquipo extends Component {
                 )}
               </FormGroup>
               <FormGroup className="mb-4">
-                <Label className="label-custom">Costo del arreglo (Bs)</Label>
+                <Label className="label-custom">Tipo de Equipo Dañado</Label>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="tipo_equipo_danado"
+                      value="Reposición"
+                      checked={this.state.tipo_equipo_danado === "Reposición"}
+                      onChange={this.handleInput}
+                    />
+                    Reposición
+                  </Label>
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="tipo_equipo_danado"
+                      value="Mantenimiento"
+                      checked={this.state.tipo_equipo_danado === "Mantenimiento"}
+                      onChange={this.handleInput}
+                    />
+                    Mantenimiento
+                  </Label>
+                </FormGroup>
+              </FormGroup>
+              {this.state.tipo_equipo_danado === "Reposición" && (
+              <FormGroup className="mb-4">
+                <Label className="label-custom">Costo de la reposición (Bs)</Label>
                 <Input
                   type="number"
                   name="costo_equipo"
@@ -132,6 +177,21 @@ class AgregarEquipo extends Component {
                   <span>{this.state.errors.costo_equipo}</span>
                 )}
               </FormGroup>
+            )}
+            {this.state.tipo_equipo_danado === "Mantenimiento" && (
+              <FormGroup className="mb-4">
+                <Label className="label-custom">Costo del mantenimiento (Bs)</Label>
+                <Input
+                  type="number"
+                  name="costo_equipo"
+                  placeholder="Ingrese el costo"
+                  onChange={this.handleInput}
+                />
+                {this.state.errors.costo_equipo && (
+                  <span>{this.state.errors.costo_equipo}</span>
+                )}
+              </FormGroup>
+            )}
               <FormGroup className="mb-4">
                 <Label className="label-custom">Área Común</Label>
                 <Input

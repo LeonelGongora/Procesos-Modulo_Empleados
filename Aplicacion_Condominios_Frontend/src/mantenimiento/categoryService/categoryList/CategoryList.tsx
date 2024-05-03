@@ -35,7 +35,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
           <thead>
             <tr>
               <th className="left">Nombre de la categoría</th>
-              <th className="left">Descripción</th>
+              <th className="left">Descripciónnnnn</th>
               <th className="righ">Acciones</th>
             </tr>
           </thead>

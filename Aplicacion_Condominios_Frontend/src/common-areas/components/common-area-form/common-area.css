@@ -1,35 +1,6 @@
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
 .name-capacity-container {
   display: flex;
   gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  font-weight: bold;
-}
-
-.form input:not([type="submit"]),
-textarea {
-  border: 1px solid #ced4da;
-  outline: none;
-  border-radius: 10px;
-  padding: 0.5rem;
-  background-color: #f3f4f6;
-  width: 100%;
 }
 
 .policy-container {
@@ -97,27 +68,6 @@ textarea {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-}
-
-.errors-container {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  max-width: 400px;
-  margin: 0 auto;
-  color: red;
-  background-color: rgba(255, 0, 0, 0.1);
-  padding: 1rem;
-  border-radius: 10px;
-  gap: 1rem;
-}
-
-.errors-container ul {
-  list-style: disc;
-}
-
-.errors-container h3 {
-  font-size: 1.3rem;
 }
 
 .loader-container {

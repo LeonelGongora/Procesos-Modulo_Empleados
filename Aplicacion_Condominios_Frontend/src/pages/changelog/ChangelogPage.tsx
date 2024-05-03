@@ -10,11 +10,17 @@ import { deleteCategory } from "../../mantenimiento/services/maintenance/categor
 type Props = {};
 
 const ChangelogPage = (props: Props) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [categories, setCategories] = useState<
     { id: number; catnombre: string; catdescripcion: string }[]
   >([]);
 
   const [flag, setFlag] = useState(true);
+  const [dataToEdit, setDataToEdit] = useState<{
+    id: number;
+    catnombre: string;
+    catdescripcion: string;
+  }>({ id: 0, catnombre: "", catdescripcion: "" });
 
   const handleRegisterCategory = (
     id: number,
@@ -24,16 +30,29 @@ const ChangelogPage = (props: Props) => {
     setCategories([...categories, { id, catnombre, catdescripcion }]);
   };
 
+  const handleEditCategory = (
+    id: number,
+    catnombre: string,
+    catdescripcion: string
+  ) => {
+    const categoryFound = categories.findIndex((element) => element.id === id);
+    if (categoryFound !== -1) {
+      categories[categoryFound] = {
+        ...categories[categoryFound],
+        catnombre: catnombre,
+        catdescripcion: catdescripcion,
+      };
+    }
+  };
+
   const handleDelete = (id: number) => {
     deleteItem(id);
   };
 
   const deleteItem = async (id: number) => {
     try {
-      console.log("Flag antes:", flag);
       deleteCategory(id);
       setFlag(!flag);
-      console.log("Flag despues:", flag);
     } catch (error) {}
   };
 
@@ -48,11 +67,30 @@ const ChangelogPage = (props: Props) => {
     } catch (error) {}
   };
 
+  const handleEdit = (
+    category: React.SetStateAction<{
+      id: number;
+      catnombre: string;
+      catdescripcion: string;
+    }>
+  ) => {
+    console.log("🚀 ~ ChangelogPage ~ category:", category);
+    setIsEditing(true);
+    setDataToEdit(category);
+  };
+
   return (
     <>
       <h2>CATEGORÍAS DE SERVICIOS</h2>
       <div id="content">
-        <CategoryForm onRegister={handleRegisterCategory} />
+        <CategoryForm
+          onRegister={handleRegisterCategory}
+          isEditing={isEditing}
+          dataToEdit={dataToEdit}
+          setIsEditing={setIsEditing}
+          setDataToEdit={setDataToEdit}
+          handleEditCategory={handleEditCategory}
+        />
         <div className="row">
           <div className="col">
             <table className="table table-striped">
@@ -69,7 +107,10 @@ const ChangelogPage = (props: Props) => {
                     <td>{category.catnombre}</td>
                     <td>{category.catdescripcion}</td>
                     <td className="actions">
-                      <button type="button">
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(category)}
+                      >
                         <CreateOutlinedIcon fontSize="large" />
                       </button>
                       <button

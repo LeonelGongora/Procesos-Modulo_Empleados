@@ -36,14 +36,32 @@ export default function CardCommonArea({ commonArea }: CardCommonAreaProps) {
           Capacidad: {commonArea.capacity} personas
         </CardSubtitle>
         <CardText>{commonArea.description}</CardText>
-        <Button color="info">
+
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* <Button color="info"> */}
           <Link
-            className="card-common-area-link"
+            className="card-common-area-link details-link"
             to={`/areas-comunes/${commonArea.id}`}
           >
             Ver detalles
           </Link>
-        </Button>
+          {/* </Button> */}
+
+          {/* <Button color="primary"> */}
+          <Link
+            className="card-common-area-link calendar-link"
+            to={`/areas-comunes/calendario/${commonArea.id}`}
+          >
+            Ver calendario
+          </Link>
+          {/* </Button> */}
+        </div>
       </CardBody>
     </Card>
   );

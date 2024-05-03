@@ -21,11 +21,14 @@
     "@types/react-dom": "^18.0.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "dayjs": "^1.11.11",
     "mdb-react-ui-kit": "^7.2.0",
     "react": "^18.2.0",
+    "react-big-calendar": "^1.12.1",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
     "react-icons": "^5.1.0",
+    "react-modal": "^3.16.1",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.22.3",
     "react-scripts": "^5.0.1",
@@ -59,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-big-calendar": "^1.8.9"
   }
 }
