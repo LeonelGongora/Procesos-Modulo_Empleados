@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Empleados;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Empleados\Employee;
+use App\Models\Empleados\Asistencia;
 class EmployeeController extends Controller
 {
     public function store(Request $request){
@@ -89,5 +90,53 @@ class EmployeeController extends Controller
             'message' =>'Empleados con contrato obtenidos exitosamente',
             'empleados' => $empleadosConContrato
         ]);
+    }
+
+    public function marcarHora(Request $request){
+        $ci = $request -> ci;
+        
+        $empleadoId = Employee::select('id')
+                              ->where('ci',$ci)
+                              ->first();
+        if($empleadoId){
+            $id = $empleadoId -> id;
+            //$diaActual = Carbon::now()->isoFormat('dddd');
+            date_default_timezone_set('America/La_Paz');
+            $horaActual = date('H:i:s');
+            $fechaActual = date('Y-m-d');
+            
+            $horaMarcada = Asistencia::where('id_empleado',$id)
+                                      ->where('fecha',$fechaActual)
+                                      ->where('hora_salida',null)
+                                      ->first();
+            
+            if($horaMarcada){
+                $horaMarcada -> hora_salida = $horaActual;
+
+                $horaMarcada -> save();
+                return response()->json([
+                        'status' => 200,
+                        'mensaje' => 'Update realizado',
+                ]);
+            }
+            else{
+                $asistencia = new Asistencia();
+                $asistencia-> id_empleado = $id;
+                $asistencia-> hora_entrada = $horaActual;
+                $asistencia -> save();
+
+                return response()->json([
+                    'status' => 200,
+                    'mensaje' => 'Ingreso realizado',
+    
+                ]);
+            }
+        }
+        else{
+            return response()->json([
+                'status' => 200,
+                'mensaje' => 'No existe el usuario',
+            ]);
+        }
     }
 }
