@@ -2,19 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Cookies from 'universal-cookie';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import { MDBInputGroup, MDBInput, MDBIcon, MDBBtn } from 'mdb-react-ui-kit';
-import SearchIcon from '@mui/icons-material/Search';
 import '../css/homePageEmpleados_style.css'
 
 const cookies = new Cookies();
@@ -121,7 +113,6 @@ function EmployeHomePage() {
   }
 
   const editarInformacionEmpleado = (id)  => {
-    console.log(id)
     cookies.set("id_empleado_seleccionado", id, { path: "/" });
     window.location.href = "./employeeEdit";
   }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\CommonArea;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CommonArea\CommonAreaRequest;
+use App\Http\Requests\CommonArea\ReservationRequest;
 use App\Http\Requests\CommonArea\UpdateCommonAreaRequest;
 use App\Http\Resources\CommonArea\CommonAreaCollection;
 use App\Http\Resources\CommonArea\CommonAreaResource;
+use App\Http\Resources\CommonArea\ReservationCollection;
 use App\Models\CommonArea\CommonArea;
 use App\Models\CommonArea\Policy;
 use App\Models\CommonArea\Schedule;
@@ -151,5 +153,16 @@ class CommonAreaController extends Controller
         
         $commonArea->delete();
         return response()->json(['message' => 'Area comun eliminada correctamente'], 200);
+    }
+
+    public function reservations($idCommonArea) {
+        $commonArea = CommonArea::find($idCommonArea);
+        if(!$commonArea){
+            return response()->json(['message' => 'Area comun no encontrada'], 404);
+        }
+        $reservations = $commonArea->reservations;
+        return response()->json(['data' => [
+            'reservations' => new ReservationCollection($reservations)
+        ]], 200);
     }
 }

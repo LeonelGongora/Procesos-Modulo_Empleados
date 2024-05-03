@@ -21,9 +21,12 @@ class CreateDepartamentosTable extends Migration
             $table->integer('superficie');
             $table->boolean('disponibilidad');
             $table->boolean('amoblado');
+            $table->boolean('ofertado_venta');
+            $table->boolean('ofertado_alquiler');
+            $table->boolean('ofertado_anticretico');
             $table->string('descripcion_departamento');
             $table->integer('piso');
-            $table->string('imagen_departamento')->nullable();;
+            $table->string('imagen_departamento')->nullable();
 
             $table->foreignId('edificio_id')
                 ->constrained('edificios')

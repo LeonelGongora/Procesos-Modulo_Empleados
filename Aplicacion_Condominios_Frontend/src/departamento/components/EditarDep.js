@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-    Input, FormGroup, Label, Col, Row, Button, Container
+    Input, FormGroup, Label, Col, Row, Button, Container,
+    FormFeedback, CardImg
 } from "reactstrap";
 import "./customs.css";
 import Cookies from 'universal-cookie';
@@ -43,6 +44,9 @@ class EditarDep extends Component {
             superficie: 0,
             disponibilidad: true,
             amoblado: false,
+            ofertado_venta: false,
+            ofertado_alquiler: false,
+            ofertado_anticretico: false,
             descripcion_departamento: "",
             errors: {},
             bloques: [],
@@ -54,9 +58,17 @@ class EditarDep extends Component {
             imagenDep: "",
             nuevaImagen: "",
             modalOpen: false,
-            nuevaImagenMostrar:"",
+            nuevaImagenMostrar: "",
+            checkBoxOferta: '',
         };
     }
+    validarCheckboxes = () => {
+        if (!this.state.ofertado_venta && !this.state.ofertado_alquiler && !this.state.ofertado_anticretico) {
+            return 'Selecciona al menos una oferta.';
+        }
+        return '';
+    };
+
     obtenerDatosDepartamento = async (idDepartamento) => {
         try {
             const response = await axios.get(`${endpoint}/departamento/${idDepartamento}`);
@@ -81,6 +93,9 @@ class EditarDep extends Component {
                 superficie: departamento.superficie,
                 disponibilidad: departamento.disponibilidad === 1 ? true : false,
                 amoblado: departamento.amoblado === 1 ? true : false,
+                ofertado_venta: departamento.ofertado_venta === 1 ? true : false,
+                ofertado_alquiler: departamento.ofertado_alquiler === 1 ? true : false,
+                ofertado_anticretico: departamento.ofertado_anticretico === 1 ? true : false,
                 descripcion_departamento: departamento.descripcion_departamento,
                 pisoSeleccionado: departamento.piso,
                 edificioSeleccionado: departamento.edificio_id,
@@ -207,11 +222,15 @@ class EditarDep extends Component {
             validationErrors.superficie =
                 "Ingrese una superficie válida";
         }
+        let checkBoxError = this.validarCheckboxes();
+        if (checkBoxError !== '') {
+            validationErrors.checkBoxOferta = checkBoxError;
+        }
 
-        if (this.state.imagenDep.name) {
+        if (this.state.nuevaImagen.name) {
             const extensiones = ["png", "PNG", "jpg", "jpeg"];
 
-            var nombreArchivo = this.state.imagenDep.name;
+            var nombreArchivo = this.state.nuevaImagen.name;
             const extension = nombreArchivo.substring(
                 nombreArchivo.lastIndexOf(".") + 1,
                 nombreArchivo.length
@@ -219,8 +238,8 @@ class EditarDep extends Component {
             if (!extensiones.includes(extension)) {
                 document.getElementsByClassName("imagen_input").value = "";
 
-                this.setState({ imagenDep: "" });
-                validationErrors.imagenDep =
+                this.setState({ nuevaImagen: "" });
+                validationErrors.nuevaImagen =
                     "La imagen tiene que tener una extension .png, .jpg, .PNG o .jpeg";
             }
         }
@@ -237,6 +256,9 @@ class EditarDep extends Component {
             data.append("superficie", this.state.superficie);
             data.append("disponibilidad", this.state.disponibilidad ? '1' : '0');
             data.append("amoblado", this.state.amoblado ? '1' : '0');
+            data.append("ofertado_venta", this.state.ofertado_venta ? '1' : '0');
+            data.append("ofertado_alquiler", this.state.ofertado_alquiler ? '1' : '0');
+            data.append("ofertado_anticretico", this.state.ofertado_anticretico ? '1' : '0');
             data.append("descripcion_departamento", this.state.descripcion_departamento);
             data.append("piso", this.state.pisoSeleccionado);
             if (this.state.nuevaImagen) {
@@ -251,7 +273,7 @@ class EditarDep extends Component {
 
             await axios.post(`${endpoint}/departamentoupd/${idDep}`, data);
             cookies.remove('idDepa');
-            window.location.href = "./depa";
+            window.location.href = "./departamentos";
 
 
         }
@@ -278,25 +300,25 @@ class EditarDep extends Component {
                 <Container className="custom-form">
                     <Row>
                         <Col sm={12}>
-                            <h2 className="text-center mb-5">Editar departamento</h2>
+                            <h2 className="text-center mb-5 titulosForms">Editar departamento</h2>
                             <form onSubmit={this.updateDepartment}>
                                 <FormGroup className="mb-4">
                                     <Label
                                         className="label-custom"
                                     >
-                                        Nombre departamento
+                                        Nombre
                                     </Label>
                                     <Input
                                         id="inputRegistro"
+                                        className="customInput"
                                         type="text"
                                         name="nombre_departamento"
-                                        placeholder="Ingrese nombre"
+                                        placeholder="Ingrese nombre del departamento"
                                         value={this.state.nombre_departamento}
                                         onChange={this.handleInput}
+                                        invalid={this.state.errors.nombre_departamento ? true : false}
                                     />
-                                    {this.state.errors.nombre_departamento && (
-                                        <span>{this.state.errors.nombre_departamento}</span>
-                                    )}
+                                    <FormFeedback>{this.state.errors.nombre_departamento }</FormFeedback>
                                 </FormGroup >
                                 <FormGroup className="mb-4">
                                     <Row>
@@ -304,82 +326,143 @@ class EditarDep extends Component {
                                             <Label
                                                 className="label-custom"
                                             >
-                                                Número de habitaciones
+                                                Habitaciones
                                             </Label>
                                             <Input
                                                 id="inputRegistro"
                                                 type="number"
+                                                className="customInput"
                                                 name="numero_habitaciones"
+                                                placeholder="N° de habitaciones entre 1 y 20"
                                                 value={this.state.numero_habitaciones}
                                                 onChange={this.handleInput}
+                                                invalid={this.state.errors.numero_habitaciones ? true : false}
                                             />
-                                            {this.state.errors.numero_habitaciones && (
-                                                <span>{this.state.errors.numero_habitaciones}</span>
-                                            )}
+                                            <FormFeedback>{this.state.errors.numero_habitaciones}</FormFeedback>
                                         </Col>
                                         <Col sm={4}>
                                             <Label
                                                 className="label-custom"
                                             >
-                                                Número de personas
+                                                Personas
                                             </Label>
                                             <Input
                                                 id="inputRegistro"
+                                                className="customInput"
                                                 type="number"
                                                 name="numero_personas"
                                                 value={this.state.numero_personas}
+                                                placeholder="N° de personas entre 1 y 20"
                                                 onChange={this.handleInput}
+                                                invalid={this.state.errors.numero_personas ? true : false}
                                             />
-                                            {this.state.errors.numero_personas && (
-                                                <span>{this.state.errors.numero_personas}</span>
-                                            )}
+                                            <FormFeedback>{this.state.errors.numero_personas}</FormFeedback>
                                         </Col>
                                         <Col sm={4}>
                                             <Label
                                                 className="label-custom"
                                             >
-                                                Superficie
+                                                Superficie(m²)
                                             </Label>
                                             <Input
                                                 id="inputRegistro"
+                                                className="customInput"
                                                 type="number"
                                                 name="superficie"
                                                 value={this.state.superficie}
+                                                placeholder="N° entre 100 y 999"
                                                 onChange={this.handleInput}
+                                                invalid={this.state.errors.superficie ? true : false}
                                             />
-                                            {this.state.errors.superficie && (
-                                                <span>{this.state.errors.superficie}</span>
-                                            )}
+                                            <FormFeedback>{this.state.errors.superficie}</FormFeedback>
                                         </Col>
                                     </Row>
                                     
                                 </FormGroup>
-                                <FormGroup className="mb-4">
-                                   
-                                </FormGroup>
-                                <FormGroup className="mb-4">
-                                    
-                                </FormGroup>
-                                <Row className="mb-4">
+
+                                <Row className="mb-3">
                                     <Col sm={6}>
 
                                         <Label
                                             check
                                             className="label-custom"
                                         >
+                                            Amoblado{' '}
                                             <Input
                                                 type="checkbox"
+                                                className="customCheckbox"
                                                 id="checkBoxAmoblado"
                                                 checked={this.state.amoblado}
                                                 onChange={() => this.changeChecked('amoblado')}
                                             />
-                                            {' '}
-                                            Amoblado
+                                            
                                         </Label>
-
-
                                     </Col>
                                 </Row>
+
+                                <FormGroup className="mb-3">
+                                    <Label
+                                        className="label-custom"
+
+                                    >
+                                        Ofertar como:
+
+                                    </Label>
+                                    <Row className="mb-3 mt-1">
+                                        <Col sm={4}>
+                                            <Label
+                                                check
+                                                className="label-custom"
+                                            >   
+                                                Venta
+                                                {' '}
+                                                <Input
+                                                    type="checkbox"
+                                                    className="customCheckbox"
+                                                    id="checkBoxVenta"
+                                                    checked={this.state.ofertado_venta}
+                                                    onChange={() => this.changeChecked('ofertado_venta')}
+                                                />
+                                            </Label>
+                                        </Col>
+                                        <Col sm={4}>
+                                            <Label
+                                                check
+                                                className="label-custom"
+                                            >   
+                                                Alquiler
+                                                {' '}
+                                                <Input
+                                                    type="checkbox"
+                                                    className="customCheckbox"
+                                                    id="checkBoxAlquiler"
+                                                    checked={this.state.ofertado_alquiler}
+                                                    onChange={() => this.changeChecked('ofertado_alquiler')}
+                                                />
+                                            </Label>
+                                        </Col>
+                                        <Col sm={4}>
+                                            <Label
+                                                check
+                                                className="label-custom"
+                                            >   
+                                                Anticretico
+                                                {' '}
+                                                <Input
+                                                    type="checkbox"
+                                                    className="customCheckbox"
+                                                    id="checkBoxAnticretico"
+                                                    checked={this.state.ofertado_anticretico}
+                                                    onChange={() => this.changeChecked('ofertado_anticretico')}
+                                                />
+                                            </Label>
+                                        </Col>
+                                        {this.state.errors.checkBoxOferta && <Label
+                                            style={{ color: 'red', fontSize: '0.875rem' }}
+                                        >{this.state.errors.checkBoxOferta}</Label>}
+                                    </Row>
+                                </FormGroup>
+
                                 <FormGroup className="mb-4">
                                     <Label
                                         className="label-custom"
@@ -388,18 +471,24 @@ class EditarDep extends Component {
                                     </Label>
                                     <Input
                                         type="file"
+                                        className="customImage"
                                         name="nuevaImagen"
                                         id="nuevaImagen"
                                         onChange={this.handleChange}
+                                        style={this.state.errors.nuevaImagen ? { borderColor: 'red' } : {}}
                                     />
                                     {this.state.imagenDep && (
                                     <div className="d-flex justify-content-center">
-                                        <img
-                                            src={this.state.nuevaImagenMostrar ? this.state.nuevaImagenMostrar : this.state.imagenDep}
-                                            alt="Vista previa"
-                                            style={{ width: '128px', height: '128px', marginTop: '25px'}}
-                                        />
+                                            <CardImg
+                                                width="100%"
+                                                src={this.state.nuevaImagenMostrar ? this.state.nuevaImagenMostrar : this.state.imagenDep}
+                                                alt="Vista previa"
+                                                style={{ width: '200px', height: '200px', marginTop: '25px', borderRadius: '10px' }}
+                                            />
                                     </div>
+                                    )}
+                                    {this.state.errors.nuevaImagen && (
+                                        <div style={{color: 'red'}}>{this.state.errors.nuevaImagen}</div>
                                     )}
                                 </FormGroup>
 
@@ -411,17 +500,19 @@ class EditarDep extends Component {
                                     </Label>
                                     <Input
                                         id="inputRegistro"
-                                        type="textarea"
+                                        type="textarea"                                        
                                         name="descripcion_departamento"
                                         value={this.state.descripcion_departamento}
-                                        className="autoExpand"
+                                        className="autoExpand customInput"
                                         placeholder="Ingrese descripcion"
                                         onChange={this.handleInput}
+                                        invalid={this.state.errors.descripcion_departamento ? true : false}
                                         onInput={(e) => {
                                             e.target.style.height = 'auto';
                                             e.target.style.height = (e.target.scrollHeight) + 'px';
                                         }}
                                     />
+                                    <FormFeedback>{this.state.errors.descripcion_departamento}</FormFeedback>
                                 </FormGroup>
                                 <Button size="lg" type="button" className="custom-button mx-auto d-block"
                                     style={{ fontWeight: 'bold' }}

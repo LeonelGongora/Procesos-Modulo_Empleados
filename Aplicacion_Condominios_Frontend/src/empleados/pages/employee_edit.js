@@ -42,7 +42,6 @@ function EmployeeEdit() {
 
   useEffect(()=>{
     getEmpleado();
-    console.log(id)
   }, []);
 
   const getEmpleado =  async (e) => {

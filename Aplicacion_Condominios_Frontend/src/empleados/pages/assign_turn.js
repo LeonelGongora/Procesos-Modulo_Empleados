@@ -31,13 +31,9 @@ function AssignTurn() {
   }, []);
 
   const getEmpleados = async () => {
-    const respuesta = await axios.get(
-      `http://127.0.0.1:8000/api/get_all_employees`
-    );
-    console.log(respuesta);
-    setEmpleados(respuesta.data.empleados);
-    console.log(empleados);
-  };
+    const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_employee_with_contract`);
+    setEmpleados(respuesta.data.empleados)
+  }
 
   const eliminarEmpleado = (id) => {
     console.log(id);
@@ -100,7 +96,7 @@ function AssignTurn() {
                         borderColor: "#65B8A6",
                       }}
                     >
-                      <AddIcon /> 
+                      <AddIcon />
                     </Button>
                   </td>
                 </tr>

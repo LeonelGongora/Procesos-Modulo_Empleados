@@ -25,4 +25,8 @@ class Employee extends Model
         return $this->hasMany(Contract::class, 'empleado', 'id');
 
     }
+
+    public function asistencias(){
+        return $this->hasMany(Asistencia::class, 'id_empleado', 'id');
+    }
 }

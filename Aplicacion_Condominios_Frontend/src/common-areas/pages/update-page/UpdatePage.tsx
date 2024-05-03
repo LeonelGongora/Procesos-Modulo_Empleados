@@ -21,7 +21,7 @@ export default function UpdatePage() {
       cancelButtonText: "Cancelar",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const url = `http://localhost:8000/api/areas-comunes/${id}`;
+        const url = `http://localhost:8000/api/common-areas/${id}`;
         await fetch(url, {
           method: "DELETE",
         });

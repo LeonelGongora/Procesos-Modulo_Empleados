@@ -1,0 +1,35 @@
+#modalBodyPU{
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    text-align: center; 
+}
+
+#modalFooterPU{
+    justify-content: center;
+}
+
+#checkPU{
+    margin-inline: 2.2rem;
+    margin-top: 0.9rem;
+    text-align: center;
+}
+.checkboxContainerPU{
+    display: flex;
+    flex-direction:row;
+}
+
+.confirmBoton{
+    background-color: rgba(45, 96, 115, 1);
+    border-color: rgba(45, 96, 115, 1);
+    color: white; 
+}
+
+.confirmBoton:hover{
+    background-color: rgb(32, 63, 75); 
+    border-color: rgba(32, 63, 75);
+}
+.checkModal.form-check-input{
+    box-shadow: none;
+    border: 1px solid rgb(63, 63, 63);
+}

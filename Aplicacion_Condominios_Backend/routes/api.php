@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommonArea\CommonAreaController;
+use App\Http\Controllers\CommonArea\ReservationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Departamento\BloqueController;
@@ -22,6 +23,8 @@ use App\Http\Controllers\Mantenimiento\RegistroSolicitudController;
 use App\Http\Controllers\Empleados\WorkingHourController;
 
 use App\Http\Controllers\Empleados\ContractController;
+use App\Models\Empleados\Employee;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,6 +49,11 @@ Route::controller(DepartamentoCotroller::class)->group(function(){
     Route::get('/departamento/{id}','show')->name('departamento.show');
     Route::post('/departamentoupd/{id}','update')->name('departamento.update');
     Route::delete('/departamento/{id}','destroy')->name('departamento.destroy');
+    Route::put('/departamentoAct/{id}/actualizarOfertados','actualizarOfertados')->name('departamento.actualizarOfertados');
+    //ruta para mantenimiento
+    Route::get('/departamentos-by-edificios/{id}', 'getDepartamentosByEdificios')->name('departamento.getDepartamentosByEdificios');
+    
+    
 });
 
 Route::controller(BloqueController::class)->group(function(){
@@ -62,25 +70,43 @@ Route::controller(EdificioController::class)->group(function(){
     Route::get('/edificio/{id}','show')->name('edificio.show');
     Route::post('/edificioupd/{id}','update')->name('edificio.update');
     Route::delete('/edificio/{id}','destroy')->name('edificio.destroy');
-    Route::get('/edificios-by-bloques/{id}', 'getEdificiosByBloques')->name('edificios.bybloques');
+    Route::get('/edificios-by-bloques/{id}', 'getEdificiosByBloques')->name('edificio.getEdificiosByBloques');
 });
 Route::controller(ResidenteController::class)->group(function(){
     Route::get('/residentes','index')->name('residente.index');
     Route::get('/residentes-disp/{estado}','getResidentesbyEstado')->name('residente.getResidentesbyEstado');
     Route::post('/residentes/actualizar-estado-contrato', 'actualizarEstadoContrato')->name('residente.actualizarEstadoContrato');
     Route::put('/residentes/{id}/actualizarEst','actualizarEstadoResidente')->name('residente.actualizarEstadoResidente');
+    Route::put('/residentes/{id}/actualizarContrato','actualizarContrato')->name('residente.actualizarContrato');
     Route::post('/residente','store')->name('residente.store');
     Route::get('/residente/{id}','show')->name('residente.show');
     Route::put('/residenteupd/{id}','update')->name('residente.update');
     Route::delete('/residente/{id}','destroy')->name('residente.destroy');
     Route::post('/residente-csv','import')->name('residente.import');
+    //obtener residentes de un contrato
+    Route::get('/residentes-by-contrato/{id}', 'getResidentesByContrato')->name('residente.getResidentesByContrato');
+    //obtener propietario de un contrato
+    Route::get('/propietario-by-contrato/{id}', 'getPropietariosByContrato')->name('residente.getPropietariosByContrato');
+    //obtener titulares de un contrato
+    Route::get('/titular-by-contrato/{id}', 'getTitularByContrato')->name('residente.getTitularByContrato');
+    //obtener titulares y propietarios para notificaciones generales
+    Route::get('/notificacion-general', 'notificacionesGenerales')->name('residente.notificacionesGenerales');
+    //ruta para mantenimiento
+    Route::get('/residente-by-departamento/{id}', 'getResidenteByDepartamento')->name('residente.getResidenteByDepartamento');
+    Route::get('/propietario-by-contratoS/{id}', 'getPropietByContratShort')->name('residente.getPropietByContratShort');
+    Route::get('/titular-by-contratoS/{id}', 'getTituByContratShort')->name('residente.getTituByContratShort');
+
 });
 Route::controller(ContratoController::class)->group(function(){
     Route::get('/contratos','index')->name('contrato.index');
+    Route::get('/contratosVigentes','contratosVigentes')->name('contrato.contratosVigentes');
     Route::post('/contrato','store')->name('contrato.store');
     Route::get('/contrato/{id}','show')->name('contrato.show');
     Route::put('/contratoupd/{id}','update')->name('contrato.update');
     Route::delete('/contrato/{id}','destroy')->name('contrato.destroy');
+    Route::get('/contratoDep/{valorDepartamento}', 'buscarContratoPorDepartamento')->name('contrato.buscarContratoPorDepartamento');
+    Route::get('/contratoDepS/{idDepartament}', 'getContratByDepShort')->name('contrato.getContratByDepShort');
+    Route::put('/contratoNoVig/{id}/anularContrato','anularContrato')->name('contrato.anularContrato');
 });
 
 // EMPLEADOS
@@ -90,10 +116,13 @@ Route::delete('/delete_employee/{id}', [EmployeeController::class, 'delete']);
 Route::get('/get_employee/{id}', [EmployeeController::class, 'getById']);
 Route::post('/update_employee/{id}', [EmployeeController::class, 'update']);
 Route::post('/updateContractStatus/{id}', [EmployeeController::class, 'updateContractStatus']);
+Route::get('/get_employee_with_contract', [EmployeeController::class, 'getEmployeeWithContract']);
 
 Route::post('/add_contract', [ContractController::class, 'store']);
 
 Route::post('/add_working_hour', [WorkingHourController::class, 'store']);
+
+Route::post('marcar_hora_empleado',[Employee::class, 'marcarHora']);
 
 // MANTENIMIENTO
 Route::get('/CategoriaServicio', [CategoriaServicioController::class,'getCategoriaServicio']);
@@ -114,8 +143,10 @@ Route::post('/registro-solicitud/insert', [RegistroSolicitudController::class,'i
 Route::put('/registro-solicitud/update/{id}', [RegistroSolicitudController::class,'updateRegistroSolicitud']);
 Route::delete('/registro-solicitud/delete/{id}', [RegistroSolicitudController::class,'deleteRegistroSolicitud']);
 
-Route::apiResource('/areas-comunes', CommonAreaController::class);
-
+// COMMON AREAS
+Route::get('/common-areas/{id}/reservations', [CommonAreaController::class, 'reservations']);
+Route::apiResource('/common-areas/reservations', ReservationController::class);
+Route::apiResource('/common-areas', CommonAreaController::class);
 
 //Cobro_Servicios
 Route::controller(EquipamientosController::class)->group(function(){
@@ -130,6 +161,7 @@ Route::controller(EquipamientosController::class)->group(function(){
 
 Route::controller(PreAvisoController::class)->group(function(){
     Route::get('/obtener-departamentos', [PreAvisoController::class, 'obtenerNombresDepartamentos']);
+    Route::post('/generar-preaviso', [PreAvisoController::class, 'store']);
 });
 
 // Notificaciones
@@ -146,4 +178,8 @@ Route::group(['prefix' =>  'v1'], function () {
 Route::controller(TelegramNotificationController::class)->group(function() {
     Route::post('/telegram/notification', 'sendNoticeToOne');
     Route::post('/telegram/notifications', 'sendNoticeToMany');
-});
+});Route::get('/obtener-equipamientos', [EquipamientosController::class, 'getAllEquipamientos']);
+
+Route::get('/obtener-equipamiento/{id}', [EquipamientosController::class, 'getEquipoById']);
+    Route::delete('/eliminar-equipo/{id}', [EquipamientosController::class, 'delete']);
+    Route::put('/editar-equipo/{id}', [EquipamientosController::class, 'edit']);

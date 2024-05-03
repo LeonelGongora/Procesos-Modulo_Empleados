@@ -16,6 +16,9 @@ class departamento extends Model
         'superficie',
         'disponibilidad',
         'amoblado',
+        'ofertado_venta',
+        'ofertado_alquiler',
+        'ofertado_anticretico',
         'descripcion_departamento',
         'piso',
         'imagen_departamento',
@@ -24,5 +27,9 @@ class departamento extends Model
     public function edificio()
     {
         return $this->belongsTo(edificio::class);
+    }
+    public function contratos()
+    {
+        return $this->hasMany(Contrato::class, 'id');
     }
 }

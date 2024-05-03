@@ -1,55 +1,122 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import {
-  MDBBtn,
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBInput,
-  MDBRadio,
-  MDBCheckbox,
-} from "mdb-react-ui-kit";
-import Form from "react-bootstrap/Form";
+    MDBBtn,
+    MDBContainer,
+    MDBRow,
+    MDBCol,
+    MDBCard,
+    MDBCardBody,
+    MDBInput,
+    MDBRadio,
+    MDBCheckbox
+  }
+  from 'mdb-react-ui-kit';
 
-import axios from "axios";
-import Cookies from "universal-cookie";
+import axios from 'axios';
+import Cookies from 'universal-cookie';
+import '../css/contract_register_style.css'
 const cookies = new Cookies();
 function TurnRegister() {
   const empleado = cookies.get("id_empleado_seleccionado");
 
-  const [errors, setErrors] = useState({});
+    const empleado = cookies.get('id_empleado_seleccionado');
 
-  useEffect(() => {
-    diasHorarios["Lunes"] = {
-      hora_inferior: "",
-      hora_superior: "",
+    const [errors, setErrors] = useState({});
+
+    const [diasConfirmados, setDiasConfirmados] = useState([
+      false, false, false, false, false, false, false
+    ]);
+
+    const [diasHorarios, setDiasHorarios] = useState({
+      Lunes: { hora_inferior: "", hora_superior: "" },
+      Martes: { hora_inferior: "", hora_superior: "" },
+      Miercoles: { hora_inferior: "", hora_superior: "" },
+      Jueves: { hora_inferior: "", hora_superior: "" },
+      Viernes: { hora_inferior: "", hora_superior: "" },
+      Sabado: { hora_inferior: "", hora_superior: "" },
+      Domingo: { hora_inferior: "", hora_superior: "" }
+    });
+
+    useEffect(()=>{
+
+    }, []);
+  
+    const [values, setValues] = useState({
+        tipo_contrato: "",
+        fecha_inicio : "",
+        fecha_final : "",
+        area : "",
+        cargo : "",
+        beneficios : "",
+        salario : "",
+      });
+
+      const [dias, setDias] = useState([
+        "Lunes",
+        "Martes",
+        "Miercoles",
+        "Jueves",
+        "Viernes",
+        "Sabado",
+        "Domingo"
+      ]);
+
+    const handleInput = (e) => {
+        const { name, value } = e.target;
+        setValues({
+          ...values,
+          [name]: value,
+        });
+
+        if (e.target.name === "tipo_contrato") {
+          if (e.target.value === "Fijo") {
+            document.getElementById("fecha_final").disabled = true;
+          } else {
+            document.getElementById("fecha_final").disabled = false;
+          }
+        }
     };
+    
+    const handleSubmit =  async (e) => {
+        e.preventDefault(); 
+        const validationErrors = {};
+        console.log(empleado.id)
 
-    diasHorarios["Martes"] = {
-      hora_inferior: "",
-      hora_superior: "",
-    };
+        for (let i = 0; i < dias.length; i++) {
+          let confirmacionDia = document.getElementById(dias[i]);
 
-    diasHorarios["Miercoles"] = {
-      hora_inferior: "",
-      hora_superior: "",
-    };
+          if(confirmacionDia.checked && !diasHorarios[dias[i]].hora_inferior.trim()){
+            validationErrors[dias[i] + "_inferior"] = "Este campo es obligatorio"
+          }
 
-    diasHorarios["Jueves"] = {
-      hora_inferior: "",
-      hora_superior: "",
-    };
+          if(confirmacionDia.checked && !diasHorarios[dias[i]].hora_superior.trim()){
+            validationErrors[dias[i] + "_superior"] = "Este campo es obligatorio"
+          }
+        }
 
-    diasHorarios["Viernes"] = {
-      hora_inferior: "",
-      hora_superior: "",
-    };
+        setErrors(validationErrors);
 
-    diasHorarios["Sabado"] = {
-      hora_inferior: "",
-      hora_superior: "",
+        if (Object.keys(validationErrors).length === 0) {
+
+          for (let i = 0; i < dias.length; i++) {
+            if(diasHorarios[dias[i]].hora_inferior){
+              const data = new FormData();
+              data.append("dia", dias[i]);
+              data.append("hora_entrada", diasHorarios[dias[i]].hora_inferior);
+              data.append("hora_salida", diasHorarios[dias[i]].hora_superior);
+              data.append("empleado", empleado.id);
+              const respuesta_horario = await axios.post(
+                `http://127.0.0.1:8000/api/add_working_hour`,
+                data
+              );
+              if(respuesta_horario.data.status === 200){
+                console.log(respuesta_horario.data)
+              }
+            }
+          }
+          window.location.href = "./assignTurn";
+        }
     };
 
     diasHorarios["Domingo"] = {
@@ -268,6 +335,14 @@ function TurnRegister() {
     setSelectedHorario(radioB);
   };
 
+const cambiarHorarioInferior1 = (e) => {
+        diasHorarios[e.target.name].hora_inferior = e.target.value;
+      };
+    
+      const cambiarHorarioSuperior1 = (e) => {
+        diasHorarios[e.target.name].hora_superior = e.target.value;
+      };
+
   return (
     <>
       <MDBContainer fluid>
@@ -414,6 +489,7 @@ function TurnRegister() {
                         {/* Horario de Limepieza */}
                         {empleado.contracts[0].area === "Limpieza" && (
                           <>
+
                             <MDBRadio
                               name="HorariosTrabajo"
                               id="inlineRadio3"
@@ -441,10 +517,12 @@ function TurnRegister() {
                               checked={selectedHorario === "noche"}
                               onChange={() => handleHorarios(5, "noche")} //Misma funcion que la anterior.
                             />
+
                           </>
                         )}
                       </MDBCol>
                     </MDBRow>
+
 
                     {dias.map((dia) => {
                       return (
@@ -461,7 +539,13 @@ function TurnRegister() {
                                 value={horarios[dia].hora1}
                                 onChange={(e) => cambiarHorarioInferior(e)}
                                 disabled={!horarios[dia].checked}
+                                onBlur={cambiarHorarioInferior1}
                               />
+                                  {errors[dia + "_inferior"] && (
+                                  <span className="advertencia-creEve">
+                                    {errors[dia + "_inferior"]}
+                                  </span>
+                                )}
                             </MDBCol>
 
                             <MDBCol md="3" className="mb-2">
@@ -471,7 +555,13 @@ function TurnRegister() {
                                 value={horarios[dia].hora2}
                                 onChange={(e) => cambiarHorarioSuperior(e)}
                                 disabled={!horarios[dia].checked}
+                                onBlur={cambiarHorarioSuperior1}
                               />
+                                  {errors[dia + "_superior"] && (
+                                  <span className="advertencia-creEve">
+                                    {errors[dia + "_superior"]}
+                                  </span>
+                                )}
                             </MDBCol>
 
                             <MDBCol md="1">
@@ -487,7 +577,6 @@ function TurnRegister() {
                         </>
                       );
                     })}
-                  </MDBRow>
                 </MDBRow>
 
                 <hr className="mx-n3" />

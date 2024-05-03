@@ -94,6 +94,13 @@ export default function PersonalPage() {
       };
       const response = await createPersonalExterno(dataToSend);
       setPersonalData([...personalData, personal]);
+      setPersonal({
+        idPersonalExterno: 0,
+        nombre: "",
+        telefono: "",
+        direccion: "",
+        categoria: { id: 0, catnombre: "" },
+      });
     } catch (error) {}
   };
 
@@ -111,6 +118,13 @@ export default function PersonalPage() {
         dataToSend
       );
 
+      setPersonal({
+        idPersonalExterno: 0,
+        nombre: "",
+        telefono: "",
+        direccion: "",
+        categoria: { id: 0, catnombre: "" },
+      });
       setFlagUpdate(false);
     } catch (error) {}
   };
@@ -129,6 +143,7 @@ export default function PersonalPage() {
     try {
       const response = await getPersonalById(personalId);
       if (response !== null) {
+        console.log("🚀 ~ handleClickEdit ~ personalId:", response);
         const responseCategory = await getCategoryById(response.idCategoria);
         if (responseCategory !== null) {
           const category = {
@@ -140,7 +155,7 @@ export default function PersonalPage() {
             nombre: response.nombre,
             telefono: response.telefono,
             direccion: response.direccion,
-            categoria: category,
+            categoria: category ? category : { id: 0, catnombre: "" },
           };
           setPersonal(personal);
           setFlagUpdate(true);
