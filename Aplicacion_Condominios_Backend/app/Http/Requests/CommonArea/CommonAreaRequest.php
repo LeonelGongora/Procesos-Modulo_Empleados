@@ -21,7 +21,7 @@ class CommonAreaRequest extends FormRequest
             'capacity' => 'required|integer|min:10',
             'file' => 'required|string',
             'schedule' => 'required|array',
-            'schedule.*.day' => 'required|integer|between:0,6',
+            'schedule.*.day' => 'required|integer|between:1,7',
             'schedule.*.startHour' => 'required|string|date_format:H:i',
             'schedule.*.endHour' => 'required|string|date_format:H:i|after:schedule.*.startHour',
             'policies' => 'required|array',

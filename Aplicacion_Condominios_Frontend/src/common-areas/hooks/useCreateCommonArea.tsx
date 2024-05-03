@@ -162,7 +162,7 @@ export default function useCreateCommonArea(
         policies: policies,
         file: base64File,
       };
-      const URL = `${BASE_URL}/api/areas-comunes/${id ? id : ""}`;
+      const URL = `${BASE_URL}/api/common-areas/${id ? id : ""}`;
       const method = isEditing ? "PATCH" : "POST";
       try {
         setError("");

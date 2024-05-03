@@ -79,4 +79,15 @@ class EmployeeController extends Controller
             'status' => 200,
             'message' =>'Estado contrato actualizado exitosamente']);
     }
+
+    public function getEmployeeWithContract(){
+
+        $empleadosConContrato = Employee::has('contracts')->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' =>'Empleados con contrato obtenidos exitosamente',
+            'empleados' => $empleadosConContrato
+        ]);
+    }
 }

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { FaFileAlt } from 'react-icons/fa'; // Importamos el icono de registrar
 
 const GestionCobro = () => {
     const endpoint = "http://localhost:8000/api";
     const [departamentos, setDepartamentos] = useState([]);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         fetch(`${endpoint}/obtener-departamentos`)
             .then(response => response.json())
             .then(data => {
-                // Convertimos el objeto en un array de objetos
                 const departamentosArray = Object.entries(data).map(([id, nombre]) => ({ id, nombre }));
                 setDepartamentos(departamentosArray);
             })
@@ -16,6 +17,11 @@ const GestionCobro = () => {
                 console.error('Error fetching data:', error);
             });
     }, []);
+
+    const generarFormulario = (idDepartamento) => {
+        // Aquí puedes implementar la lógica para generar el formulario de pre-aviso
+        window.location.href = `/cobros/generar-preaviso/${idDepartamento}`;
+    };
 
     return (
         <div className="container">
@@ -25,7 +31,7 @@ const GestionCobro = () => {
                     <tr>
                         <th>ID</th>
                         <th>Departamento</th>
-                        <th>Generar formulario pre-aviso</th>
+                        <th>Pre-Aviso</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,6 +39,11 @@ const GestionCobro = () => {
                         <tr key={departamento.id}>
                             <td>{departamento.id}</td>
                             <td>{departamento.nombre}</td>
+                            <td>
+                                <button className="btn btn-primary" onClick={() => generarFormulario(departamento.id)}>
+                                    <FaFileAlt />
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

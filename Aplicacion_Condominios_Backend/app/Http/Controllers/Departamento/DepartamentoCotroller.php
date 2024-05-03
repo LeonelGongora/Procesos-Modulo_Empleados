@@ -25,6 +25,9 @@ class DepartamentoCotroller extends Controller
         $departamento-> superficie = $request -> superficie;
         $departamento-> disponibilidad = $request -> disponibilidad;
         $departamento-> amoblado = $request -> amoblado;
+        $departamento-> ofertado_venta = $request -> ofertado_venta;
+        $departamento-> ofertado_alquiler = $request -> ofertado_alquiler;
+        $departamento-> ofertado_anticretico = $request -> ofertado_anticretico;
         $departamento-> descripcion_departamento = $request -> descripcion_departamento;
         $departamento-> piso = $request -> piso;
 
@@ -68,6 +71,9 @@ class DepartamentoCotroller extends Controller
         $departamento-> superficie = $request -> superficie;
         $departamento-> disponibilidad = $request -> disponibilidad;
         $departamento-> amoblado = $request -> amoblado;
+        $departamento-> ofertado_venta = $request -> ofertado_venta;
+        $departamento-> ofertado_alquiler = $request -> ofertado_alquiler;
+        $departamento-> ofertado_anticretico = $request -> ofertado_anticretico;
         $departamento-> descripcion_departamento = $request -> descripcion_departamento;
         $departamento-> piso = $request -> piso;
         /* $departamento-> edificio_id = $request -> edificio_id; */
@@ -104,4 +110,24 @@ class DepartamentoCotroller extends Controller
 
         return response()->json(['mensaje' => 'Atributo actualizado correctamente']);
     }
+
+    public function actualizarOfertados(Request $request, $id)
+    {
+        $departamento = Departamento::findOrFail($id);
+
+        // Actualiza el atributo específico
+        $departamento->ofertado_venta = $request->input('ofertado_venta');
+        $departamento->ofertado_alquiler = $request->input('ofertado_alquiler');
+        $departamento->ofertado_anticretico = $request->input('ofertado_anticretico');
+        $departamento->save();
+
+        return response()->json(['mensaje' => 'Atributo actualizado correctamente']);
+    }
+
+    //funcion para mantenimiento
+    public function getDepartamentosByEdificios($id)
+    {
+        $departamentos = departamento::where('edificio_id', $id)->get();
+        return $departamentos;
+    } 
 }

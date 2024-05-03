@@ -46,7 +46,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ onRegister }) => {
         />
       </div>
       <div className="input">
-        <p>Descripcion</p>
+        <p>DescripcionFFF</p>
         <input
           type="text"
           value={description}

@@ -56,7 +56,7 @@ export default function CommonAreaForm({
     if (isEditing) {
       const fetchCommonArea = async () => {
         const response = await fetch(
-          `http://localhost:8000/api/areas-comunes/${id}`
+          `http://localhost:8000/api/common-areas/${id}`
         );
         const {
           data: { commonArea },

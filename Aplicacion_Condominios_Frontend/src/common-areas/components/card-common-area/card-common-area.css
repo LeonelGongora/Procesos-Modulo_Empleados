@@ -12,6 +12,9 @@
 .card-common-area-link {
   text-decoration: none;
   color: black;
+  border-radius: 5px;
+  padding: 0.5rem;
+  color: white;
 }
 
 .image-common-area {
@@ -19,4 +22,12 @@
   height: 250px;
   object-fit: cover;
   border-radius: 5px 5px 0 0;
+}
+
+.details-link {
+  background-color: rgb(48, 160, 225);
+}
+
+.calendar-link {
+  background-color: royalblue;
 }

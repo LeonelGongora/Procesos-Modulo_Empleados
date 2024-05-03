@@ -16,7 +16,7 @@ class CreateContratosTable extends Migration
         Schema::create('contratos', function (Blueprint $table) {
             $table->id();
             $table->date('fecha_inicio_contrato');
-            $table->date('fecha_fin_contrato');
+            $table->date('fecha_fin_contrato')->nullable();
             $table->decimal('precio_contrato', 8, 2);
             $table->string('tipo_contrato');
             $table->boolean('vigente_contrato');

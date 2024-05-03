@@ -12,11 +12,10 @@ import {
     MDBCheckbox
   }
   from 'mdb-react-ui-kit';
-import Form from 'react-bootstrap/Form';
 
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-
+import '../css/contract_register_style.css'
 const cookies = new Cookies();
 function TurnRegister() {
 
@@ -24,41 +23,21 @@ function TurnRegister() {
 
     const [errors, setErrors] = useState({});
 
+    const [diasConfirmados, setDiasConfirmados] = useState([
+      false, false, false, false, false, false, false
+    ]);
+
+    const [diasHorarios, setDiasHorarios] = useState({
+      Lunes: { hora_inferior: "", hora_superior: "" },
+      Martes: { hora_inferior: "", hora_superior: "" },
+      Miercoles: { hora_inferior: "", hora_superior: "" },
+      Jueves: { hora_inferior: "", hora_superior: "" },
+      Viernes: { hora_inferior: "", hora_superior: "" },
+      Sabado: { hora_inferior: "", hora_superior: "" },
+      Domingo: { hora_inferior: "", hora_superior: "" }
+    });
+
     useEffect(()=>{
-        diasHorarios["Lunes"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Martes"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Miercoles"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Jueves"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Viernes"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Sabado"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
-      
-          diasHorarios["Domingo"] = {
-            hora_inferior: "",
-            hora_superior: "",
-          };
 
     }, []);
   
@@ -82,8 +61,6 @@ function TurnRegister() {
         "Domingo"
       ]);
 
-      let diasHorarios = {};
-    
     const handleInput = (e) => {
         const { name, value } = e.target;
         setValues({
@@ -103,61 +80,41 @@ function TurnRegister() {
     const handleSubmit =  async (e) => {
         e.preventDefault(); 
         const validationErrors = {};
+        console.log(empleado.id)
 
-        if(!values.fecha_inicio.trim()){
-            validationErrors.fecha_inicio = "Este campo es obligatorio"
-        }
+        for (let i = 0; i < dias.length; i++) {
+          let confirmacionDia = document.getElementById(dias[i]);
 
-        if(!values.fecha_final.trim() && values.tipo_contrato === "Temporal"){
-            validationErrors.fecha_final = "Este campo es obligatorio"
-        }
+          if(confirmacionDia.checked && !diasHorarios[dias[i]].hora_inferior.trim()){
+            validationErrors[dias[i] + "_inferior"] = "Este campo es obligatorio"
+          }
 
-        if(!values.area.trim()){
-            validationErrors.area = "Seleccione una area"
-        }
-
-        if(!values.cargo.trim()){
-            validationErrors.cargo = "Seleccione un cargo"
-        }
-
-        if(!values.salario.trim()){
-            validationErrors.salario = "Este campo es obligatorio"
-        }else if (!(Number(values.salario) > 2123)) {
-            validationErrors.salario = "El salario debe ser un numero entero igual o mayor a 2124 (Minimo Nacional)";
+          if(confirmacionDia.checked && !diasHorarios[dias[i]].hora_superior.trim()){
+            validationErrors[dias[i] + "_superior"] = "Este campo es obligatorio"
+          }
         }
 
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length === 0) {
-          const data = new FormData();
 
-          data.append("tipo_contrato", values.tipo_contrato);
-          data.append("fecha_inicio", values.fecha_inicio);
-          data.append("fecha_final", values.fecha_final);
-          data.append("area", values.area);
-          data.append("cargo", values.cargo);
-          data.append("beneficios", values.beneficios);
-          data.append("salario", values.salario);
-          data.append("empleado", empleado.id);
-
-          const res = await axios.post(
-            `http://127.0.0.1:8000/api/add_contract`,
-            data
-          );
-
-          if (res.data.status === 200) {
-            const data_contrato = new FormData();
-            data_contrato.append("estado_contrato", "Contratado");
-            console.log(res);
-            const respuesta_estado = await axios.post(
-                `http://127.0.0.1:8000/api/updateContractStatus/${empleado.id}`,
-                data_contrato
-            );
-            if (respuesta_estado.data.status === 200) {
-                console.log(respuesta_estado);
+          for (let i = 0; i < dias.length; i++) {
+            if(diasHorarios[dias[i]].hora_inferior){
+              const data = new FormData();
+              data.append("dia", dias[i]);
+              data.append("hora_entrada", diasHorarios[dias[i]].hora_inferior);
+              data.append("hora_salida", diasHorarios[dias[i]].hora_superior);
+              data.append("empleado", empleado.id);
+              const respuesta_horario = await axios.post(
+                `http://127.0.0.1:8000/api/add_working_hour`,
+                data
+              );
+              if(respuesta_horario.data.status === 200){
+                console.log(respuesta_horario.data)
+              }
             }
-            window.location.href = "./assignContract";
           }
+          window.location.href = "./assignTurn";
         }
     };
 
@@ -241,6 +198,11 @@ function TurnRegister() {
                                   name={dia}
                                   onChange={cambiarHorarioInferior}
                                 />
+                                {errors[dia + "_inferior"] && (
+                                  <span className="advertencia-creEve">
+                                    {errors[dia + "_inferior"]}
+                                  </span>
+                                )}
                               </MDBCol>
 
                               <MDBCol md="3" className="mb-2">
@@ -250,6 +212,11 @@ function TurnRegister() {
                                   name={dia}
                                   onChange={cambiarHorarioSuperior}
                                 />
+                                {errors[dia + "_superior"] && (
+                                  <span className="advertencia-creEve">
+                                    {errors[dia + "_superior"]}
+                                  </span>
+                                )}
                               </MDBCol>
 
                               <MDBCol md="1">
@@ -269,8 +236,6 @@ function TurnRegister() {
                   </MDBRow>
 
                   <hr className="mx-n3" />
-
-
 
                   <MDBRow>
                     <MDBCol className="d-flex align-items-center justify-content-center">
