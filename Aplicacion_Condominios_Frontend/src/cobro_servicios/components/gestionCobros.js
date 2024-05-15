@@ -40,7 +40,7 @@ const GestionCobro = () => {
                             <td>{departamento.id}</td>
                             <td>{departamento.nombre}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => generarFormulario(departamento.id)}>
+                                <button className="btn btn-primary" onClick={() => generarFormulario(departamento.id)} style={{ width: '60px' }}>
                                     <FaFileAlt />
                                 </button>
                             </td>

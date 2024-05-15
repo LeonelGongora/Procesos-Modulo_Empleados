@@ -87,10 +87,10 @@ export const getSolicitudServicioById = async (
 //* to update an existing solicitud servicio
 export const updateSolicitudServicio = async (
   solicitudId: number,
-  solicitudData: Partial<SolicitudServicio>
-): Promise<SolicitudServicio | null> => {
+  solicitudData: Partial<SolicitudServicioResponse>
+): Promise<SolicitudServicioResponse | null> => {
   try {
-    const response: AxiosResponse<SolicitudServicio> = await api.put(
+    const response: AxiosResponse<SolicitudServicioResponse> = await api.put(
       `/registro-solicitud/update/${solicitudId}`,
       solicitudData
     );

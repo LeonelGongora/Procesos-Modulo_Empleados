@@ -8,8 +8,14 @@ import Box from "@mui/material/Box";
 import { getAllCategories } from "../services/maintenance/categoryService";
 import { createSolicitudServicio } from "../services/maintenance/solicitudMantenimientoService";
 import { getAllBloques } from "../services/departamento/bloqueService";
-import { getAllEdificios } from "../services/departamento/edificioService";
-import { getAllDepartamentos } from "../services/departamento/departamentoService";
+import {
+  getAllEdificios,
+  getEdificiosByBloqueId,
+} from "../services/departamento/edificioService";
+import {
+  getAllDepartamentos,
+  getDepartamentoByEdificioId,
+} from "../services/departamento/departamentoService";
 const place = [
   {
     value: "1",
@@ -28,6 +34,11 @@ const place = [
     label: "otro",
   },
 ];
+
+interface Place {
+  value: number;
+  label: string;
+}
 
 interface Servicio {
   id: number;
@@ -81,6 +92,32 @@ export default function PersonalPage() {
   const [bloque, setBloque] = useState<Bloque[]>();
   const [edificio, setEdificio] = useState<Edificio[]>();
   const [departamento, setDepartamento] = useState<Departamento[]>();
+  const [placesList, setPlacesList] = useState<Place[]>([
+    {
+      value: 1,
+      label: "Departamento",
+    },
+    {
+      value: 2,
+      label: "Áreas comunes",
+    },
+    {
+      value: 3,
+      label: "Infraestructura",
+    },
+    {
+      value: 4,
+      label: "otro",
+    },
+  ]);
+
+  const [currentDestino, setCurrentDestino] = useState<number>(1);
+
+  //const [showBloque, setShowBloque] = useState<boolean>(false);
+
+  const [currentEdificios, setCurrentEdificios] = useState<Edificio[]>();
+  const [currentDepartamentos, setCurrentDepartamentos] =
+    useState<Departamento[]>();
 
   const [servicioList, setServicioList] = useState<Servicio[]>([]);
   const [solicitud, setSolicitud] = useState<Solicitud>({
@@ -139,6 +176,27 @@ export default function PersonalPage() {
     console.log(response);
   };
 
+  const handleChangeBloque = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setCurrentDepartamentos([]);
+
+    const bloqueId = parseInt(e.target.value);
+    const edificiosData = await getEdificiosByBloqueId(bloqueId);
+    if (edificiosData !== null) {
+      setCurrentEdificios(edificiosData);
+    }
+  };
+
+  const handleChangeEdificio = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const edificioId = parseInt(e.target.value);
+    const departamentosData = await getDepartamentoByEdificioId(edificioId);
+    if (departamentosData !== null) {
+      setCurrentDepartamentos(departamentosData);
+    }
+  };
   return (
     <>
       <Box
@@ -157,8 +215,11 @@ export default function PersonalPage() {
               label="Destino de Servicio"
               defaultValue="1"
               helperText="Por favor seleccione el tipo de servicio"
+              onChange={(event) => {
+                setCurrentDestino(parseInt(event.target.value));
+              }}
             >
-              {place.map((option) => (
+              {placesList.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -187,8 +248,9 @@ export default function PersonalPage() {
               id="outlined-select-currency"
               select
               label="Bloque"
-              //defaultValue="1"
+              disabled={currentDestino > 1 ? true : false}
               helperText="Por favor seleccione el bloque"
+              onChange={(event) => handleChangeBloque(event)}
             >
               {bloque?.map((option) => (
                 <MenuItem key={option.id} value={option.id}>
@@ -202,9 +264,11 @@ export default function PersonalPage() {
               select
               label="Edificio"
               //defaultValue="1"
+              disabled={currentDestino > 1 ? true : false}
               helperText="Por favor seleccione el edificio"
+              onChange={(event) => handleChangeEdificio(event)}
             >
-              {edificio?.map((option) => (
+              {currentEdificios?.map((option) => (
                 <MenuItem key={option.bloque_id} value={option.bloque_id}>
                   {option.nombre_edificio}
                 </MenuItem>
@@ -215,12 +279,13 @@ export default function PersonalPage() {
               id="outlined-select-currency"
               select
               label="Piso"
+              disabled={currentDestino > 1 ? true : false}
               // defaultValue="1"
               helperText="Por favor seleccione el número de piso"
             >
-              {departamento?.map((option) => (
+              {currentDepartamentos?.map((option) => (
                 <MenuItem key={option.id} value={option.id}>
-                  {option.piso} / {option.nombre_departamento}
+                  {option.nombre_departamento}
                 </MenuItem>
               ))}
             </TextField>

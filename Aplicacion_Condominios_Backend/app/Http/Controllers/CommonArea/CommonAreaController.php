@@ -11,8 +11,11 @@ use App\Http\Resources\CommonArea\CommonAreaResource;
 use App\Http\Resources\CommonArea\ReservationCollection;
 use App\Models\CommonArea\CommonArea;
 use App\Models\CommonArea\Policy;
+use App\Models\CommonArea\Reservation;
 use App\Models\CommonArea\Schedule;
 use Illuminate\Support\Facades\DB;
+use App\Models\Cobro_Servicios\EquipamientosModel;
+use Illuminate\Http\Request;
 
 class CommonAreaController extends Controller
 {
@@ -42,7 +45,7 @@ class CommonAreaController extends Controller
 
         $dataCommonArea['url_image'] = 'CommonAreas/images/' . $name;
 
-        
+
 
         try{
             $commonArea = null;
@@ -56,14 +59,14 @@ class CommonAreaController extends Controller
                         'id_common_area' => $commonArea->id_common_area
                     ];
                 });
-    
+
                 $policies = collect($policies)->map(function ($item) use ($commonArea) {
                     return [
                         'description' => $item,
                         'id_common_area' => $commonArea->id_common_area
                     ];
                 });
-                
+
                 Schedule::insert($schedule->toArray());
                 Policy::insert($policies->toArray());
             });
@@ -150,7 +153,7 @@ class CommonAreaController extends Controller
         if(file_exists($path)){
             unlink($path);
         }
-        
+
         $commonArea->delete();
         return response()->json(['message' => 'Area comun eliminada correctamente'], 200);
     }
@@ -165,4 +168,111 @@ class CommonAreaController extends Controller
             'reservations' => new ReservationCollection($reservations)
         ]], 200);
     }
+
+
+    public function reservaPagada($idCommonArea) {
+        $commonArea = CommonArea::find($idCommonArea);
+        if(!$commonArea){
+            return response()->json(['message' => 'Area comun no encontrada'], 404);
+        }
+        $reservations = $commonArea->reservations->map(function ($reservation) {
+            return [
+                'id' => $reservation->id,
+                'reserved_date' => $reservation->reserved_date,
+                'start_time' => $reservation->start_time,
+                'end_time' => $reservation->end_time,
+                'reason' => $reservation->reason,
+                'number_of_people' => $reservation->number_of_people,
+                'reserva_pagada' => $reservation->reserva_pagada
+            ];
+        });
+        return response()->json(['data' => [
+            'reservations' => $reservations
+        ]], 200);
+    }
+
+
+
+    public function pagarReserva($idReserva) {
+        $reservation = Reservation::find($idReserva);
+        
+        if(!$reservation){
+            return response()->json(['message' => 'Reserva no encontrada'], 404);
+        }
+        
+        $reservation->reserva_pagada = 1;
+        $reservation->save();
+        
+        return response()->json(['message' => 'Reserva pagada exitosamente'], 200);
+    }
+
+    public function dummyMessage() {
+        return response()->json(['message' => 'Hola mundo'], 200);
+    }
+
+    public function indexEquipment()
+    {
+        $equipments = EquipamientosModel::all();
+        return response()->json(['data' => $equipments]);
+    }
+
+
+    public function storeEquipment(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'commonAreaId' => 'required|integer',
+            'commonAreaName' => 'required|string',
+        ]);
+
+        $equipment = EquipamientosModel::create([
+            'nombre' => $request->name,
+            'descripcion' => $request->description,
+            'costo' => $request->price,
+            'area_comun_id' => $request->commonAreaId,
+            'area_comun_nombre' => $request->commonAreaName,
+        ]);
+
+        return response()->json(['message' => 'Equipo registrado con éxito.'], 200);
+    }
+
+
+    public function updateEquipment(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'commonAreaId' => 'required|integer',
+            'commonAreaName' => 'required|string',
+        ]);
+
+        $equipment = EquipamientosModel::findOrFail($id);
+        $equipment->update([
+            'nombre' => $request->name,
+            'descripcion' => $request->description,
+            'costo' => $request->price,
+            'area_comun_id' => $request->commonAreaId,
+            'area_comun_nombre' => $request->commonAreaName,
+        ]);
+
+        return response()->json(['message' => 'Equipo actualizado con éxito.'], 200);
+    }
+
+    public function destroyEquipment($id)
+    {
+        $equipment = EquipamientosModel::findOrFail($id);
+        $equipment->delete();
+        return response()->json(['message' => 'Equipo eliminado con éxito.'], 200);
+    }
+
+    public function showEquipment($id)
+    {
+        $equipment = EquipamientosModel::findOrFail($id);
+        // return new EquipamientoResource($equipment);
+        return response()->json(['data' => $equipment], 200);
+    }
+
 }

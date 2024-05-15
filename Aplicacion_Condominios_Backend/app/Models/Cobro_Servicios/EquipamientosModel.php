@@ -12,10 +12,10 @@ class EquipamientosModel extends Model
 
     protected $table = 'equipamientos';
 
-    protected $fillable = ['nombre', 'descripcion','costo','area_comun_id'];
+    protected $fillable = ['nombre', 'descripcion','costo','area_comun_id','area_comun_nombre'];
     public function areaComun()
     {
         return $this->belongsTo(CommonArea::class, 'area_comun_id');
     }
-    
+
 }

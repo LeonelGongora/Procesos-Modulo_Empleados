@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Cookies from 'universal-cookie';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,12 +21,19 @@ function EmployeHomePage() {
     getEmpleados();
   }, []);
 
+  let time  = new Date().toLocaleTimeString()
+
+  const [ctime,setTime] = useState(time)
+  const UpdateTime=()=>{
+    time =  new Date().toLocaleTimeString()
+    setTime(time)
+  }
+  setInterval(UpdateTime)
+
   const getEmpleados = async () => {
 
     const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_all_employees`);
-    console.log(respuesta)
     setEmpleados(respuesta.data.empleados)
-    console.log(empleados)
   }
 
   const eliminarEmpleado = (id) => {
@@ -33,7 +42,6 @@ function EmployeHomePage() {
     const url = `http://127.0.0.1:8000/api/delete_employee/${id}`; 
       axios.delete(url).then(respuesta => {
         if(respuesta.data.status === 200){
-          console.log(respuesta);
           window.location.reload();
         }
     })
@@ -109,9 +117,8 @@ function EmployeHomePage() {
         });
       }
     }
-
   }
-
+  
   const editarInformacionEmpleado = (id)  => {
     cookies.set("id_empleado_seleccionado", id, { path: "/" });
     window.location.href = "./employeeEdit";
@@ -119,6 +126,11 @@ function EmployeHomePage() {
 
   return (
     <>
+      <Row className="d-flex align-items-center justify-content-center">
+        <Col className="d-flex align-items-center justify-content-center">
+          <h2>Lista de Empleados</h2>
+        </Col>
+      </Row>
       <div className="filtrarElementos-admin">
         <div className="entradaBuscador-admin">
           <input
@@ -130,7 +142,10 @@ function EmployeHomePage() {
           />
         </div>
         <div className="capsulaDesplegable-admin">
-          <select id="desplegable-tipo_contrato" onChange={manejar_Filtro_Por_Tipo}>
+          <select
+            id="desplegable-tipo_contrato"
+            onChange={manejar_Filtro_Por_Tipo}
+          >
             <option>Todos</option>
             <option>Sin contrato</option>
             <option>Contratado</option>
@@ -144,7 +159,7 @@ function EmployeHomePage() {
             <tr>
               <th>Nombre</th>
               <th>Apellido</th>
-              <th>Correo</th>
+              <th>CI</th>
               <th>Estado de Contrato</th>
               <th>Funciones</th>
             </tr>
@@ -155,7 +170,7 @@ function EmployeHomePage() {
                 <tr className="empleado">
                   <td className="empleado_nombre">{empleado.nombre}</td>
                   <td>{empleado.apellido}</td>
-                  <td>{empleado.correo}</td>
+                  <td>{empleado.ci}</td>
                   <td className="tipo_contrato">{empleado.estado_contrato}</td>
                   <td>
                     <Button

@@ -88,12 +88,10 @@ function MarcarHora() {
         if(mensajeRecibido === 'No existe el usuario'){
           Swal.fire('El carnet es incorrecto vuelva a intentarlo','','error');
         }
-        
-      
-    
+        if(mensajeRecibido === 'Ya marco entrada y salida'){
+            Swal.fire('Usted ya marco su salida y entrada de hoy','','error');
+        }
     }
-    
-    
 }
 
 
@@ -110,20 +108,14 @@ function MarcarHora() {
 
             <MDBRow>
               
-              
-              
                 <div className='text-center'>
                     <h2>Hora</h2>
                     <p style={{ fontWeight: "bold", fontSize: "30px" }}>{hora}</p>
                 </div>
-                  
-           
               
             </MDBRow>
 
             <MDBRow>
-              
-             
                 <label htmlFor="form2" className="form-label fw-bold text-center" >Carnet:</label>
                 
                 <MDBCol md="6" style={{marginLeft: "275px"}}>

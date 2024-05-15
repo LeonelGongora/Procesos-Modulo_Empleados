@@ -52,6 +52,13 @@ class EquipamientosController extends Controller
     ]);
 }
 
+
+public function getAllCommonAreasID()
+{
+    $common_areas = CommonArea::pluck('common_area_name', 'id_common_area');
+    return response()->json($common_areas);
+}
+
 public function edit(Request $request, $id)
 {
     $request->validate([

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -32,9 +32,49 @@ export const NotificationsList = () => {
     }
   ];
 
+  const [preNotices, setPreNotices] = useState([]);
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/obtener-preavisos')
+      .then(response => {
+        console.log(response.data.preAvisos);
+        setPreNotices(response.data.preAvisos);
+      })
+      .catch(error => {
+        console.error('Error: ', error);
+      });
+  }, []);
+
+  const [residents, setResidents] = useState([]);
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/residentes')
+      .then(response => {
+        console.log(response.data);
+        setResidents(response.data);
+      })
+      .catch(error => {
+        console.error('Error: ', error);
+      });
+  }, []);
+
+  const getResidentByName = (name) => {
+    let resident = null;
+
+    resident = residents.filter((r) => r.nombre_residente === name);
+
+    return resident;
+  }
+
   const saveSelectedNotice = (notice) => {
     sessionStorage.clear();
     sessionStorage.setItem('notice', JSON.stringify(notice));
+  }
+
+  const saveSelectedPreNotice = (preNotice) => {
+    let resident = getResidentByName(preNotice.propietario_pagar);
+
+    sessionStorage.clear();
+    sessionStorage.setItem('pre_notice', JSON.stringify(preNotice));
+    sessionStorage.setItem('resident', JSON.stringify(resident));
   }
 
   return (
@@ -58,6 +98,17 @@ export const NotificationsList = () => {
                 </td>
               </tr>
             )) 
+          }
+          <h4>Pre avisos</h4>
+          {
+            preNotices.map((preNotice) => (
+              <tr key={ preNotice.id }>
+                <td>{ preNotice.descripcion_servicios }</td>
+                <td>
+                  <Link to={ '/notifications/email' } className='btn btn-light' onClick={ () => saveSelectedPreNotice(preNotice) }>Email</Link>
+                </td>
+              </tr>
+            ))
           }
         </tbody>
       </table>

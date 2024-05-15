@@ -23,3 +23,16 @@ export const getAllDepartamentos = async (): Promise<Departamento[]> => {
     return [];
   }
 };
+
+export const getDepartamentoByEdificioId = async (
+  edificioId: number
+): Promise<Departamento[] | []> => {
+  try {
+    const response: AxiosResponse = await api.get(
+      `/departamentos-by-edificios/${edificioId}`
+    );
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};

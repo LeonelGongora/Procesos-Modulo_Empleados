@@ -13,7 +13,6 @@ class DepartamentoSeeder extends Seeder
      */
     public function run()
     {
-        //
         Departamento::factory()->withoutTimestamps()->count(5)->create();
     }
 }

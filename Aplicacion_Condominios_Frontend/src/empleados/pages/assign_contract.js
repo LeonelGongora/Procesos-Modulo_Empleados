@@ -8,7 +8,8 @@ import Cookies from 'universal-cookie';
 import '../css/contract_register_style.css'
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 const cookies = new Cookies();
 
 function AssignContract() {
@@ -22,9 +23,7 @@ function AssignContract() {
   const getEmpleados = async () => {
 
     const respuesta = await axios.get(`http://127.0.0.1:8000/api/get_all_employees`);
-    console.log(respuesta)
     setEmpleados(respuesta.data.empleados)
-    console.log(empleados)
   }
 
   const eliminarEmpleado = (id) => {
@@ -39,28 +38,111 @@ function AssignContract() {
     })
   }
 
-  const editarInformacionEmpleado = (id)  => {
-    console.log(id)
+  const firmarContrato = (id)  => {
     cookies.set("id_empleado_seleccionado", id, { path: "/" });
     window.location.href = "./contractRegister";
   }
 
-  const firmarContrato = (id)  => {
-    console.log(id)
-    cookies.set("id_empleado_seleccionado", id, { path: "/" });
-    window.location.href = "./contractRegister";
+  const manejarBuscador = (e) => {
+    let tipo_contrato_seleccionado_valor = document.querySelector("#desplegable-tipo_contrato").value;
+
+    if(tipo_contrato_seleccionado_valor === "Todos"){
+      document.querySelectorAll(".empleado").forEach(empleado =>{
+        empleado.querySelector(".empleado_nombre").textContent.toLowerCase().includes(e.target.value.toLowerCase())
+          ?empleado.classList.remove("filtro")
+          :empleado.classList.add("filtro")
+      })
+    }else{
+      document.querySelectorAll(".empleado").forEach(empleado =>{
+        empleado.querySelector(".empleado_nombre").textContent.toLowerCase().includes(e.target.value.toLowerCase())
+        && empleado.querySelector(".tipo_contrato").textContent.toLowerCase().includes(tipo_contrato_seleccionado_valor.toLowerCase())
+          ?empleado.classList.remove("filtro")
+          :empleado.classList.add("filtro")
+      })
+    }
+  }
+
+  const manejar_Filtro_Por_Tipo = (e) => {
+    let nombre_seleccionado_valor = document.querySelector("#buscador-admin").value;
+
+    if (nombre_seleccionado_valor === "") {
+      if (e.target.value === "Todos") {
+        document.querySelectorAll(".empleado").forEach((empleado) => {
+          empleado.classList.remove("filtro");
+        });
+      } else {
+        document.querySelectorAll(".empleado").forEach((empleado) => {
+          empleado
+            .querySelector(".tipo_contrato")
+            .textContent.toLowerCase()
+            .includes(e.target.value.toLowerCase())
+            ? empleado.classList.remove("filtro")
+            : empleado.classList.add("filtro");
+        });
+      }
+    } else {
+      if (e.target.value === "Todos") {
+        document.querySelectorAll(".empleado").forEach((empleado) => {
+          if (
+            empleado
+              .querySelector(".empleado_nombre")
+              .textContent.toLowerCase()
+              .includes(nombre_seleccionado_valor.toLowerCase())
+          ) {
+            empleado.classList.remove("filtro");
+          } else {
+            empleado.classList.add("filtro");
+          }
+        });
+      } else {
+        document.querySelectorAll(".empleado").forEach((empleado) => {
+          if (
+            empleado
+              .querySelector(".empleado_nombre")
+              .textContent.toLowerCase()
+              .includes(nombre_seleccionado_valor.toLowerCase()) &&
+              empleado
+              .querySelector(".tipo_contrato")
+              .textContent.toLowerCase()
+              .includes(e.target.value.toLowerCase())
+          ) {
+            empleado.classList.remove("filtro");
+          } else {
+            empleado.classList.add("filtro");
+          }
+        });
+      }
+    }
   }
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-        crossOrigin="anonymous"
-      />
-
-      
+    <Row className="d-flex align-items-center justify-content-center">
+        <Col className="d-flex align-items-center justify-content-center">
+          <h2>Asignacion de Contratos</h2>
+        </Col>
+      </Row>
+      <div className="filtrarElementos-admin">
+        <div className="entradaBuscador-admin">
+          <input
+            type="text"
+            name="buscador"
+            id="buscador-admin"
+            placeholder="Buscar por nombre..."
+            onChange={manejarBuscador}
+          />
+        </div>
+        <div className="capsulaDesplegable-admin">
+          <select
+            id="desplegable-tipo_contrato"
+            onChange={manejar_Filtro_Por_Tipo}
+          >
+            <option>Todos</option>
+            <option>Sin contrato</option>
+            <option>Contratado</option>
+          </select>
+        </div>
+      </div>
 
       <Container className="mt-5 mb-5 text-light ">
         <Table hover>
@@ -76,11 +158,11 @@ function AssignContract() {
           <tbody>
             {empleados.map((empleado) => {
               return (
-                <tr >
-                  <td >{empleado.nombre}</td>
+                <tr className="empleado">
+                  <td className="empleado_nombre">{empleado.nombre}</td>
                   <td>{empleado.apellido}</td>
                   <td>{empleado.ci}</td>
-                  <td>{empleado.estado_contrato}</td>
+                  <td className="tipo_contrato">{empleado.estado_contrato}</td>
                   <td>
 
                   {empleado.estado_contrato === "Contratado" ? (
@@ -88,7 +170,7 @@ function AssignContract() {
                         ) : (
                             <Button variant="danger" onClick={() => firmarContrato(empleado)} style={{ backgroundColor: '#65B8A6', borderColor: '#65B8A6' }}><AddIcon/></Button>
                         )}
-                        </td>
+                  </td>
                 </tr>
               );
             })}

@@ -18,3 +18,16 @@ export const getAllEdificios = async (): Promise<Edificio[]> => {
     return [];
   }
 };
+
+export const getEdificiosByBloqueId = async (
+  bloqueId: number
+): Promise<Edificio[] | []> => {
+  try {
+    const response: AxiosResponse = await api.get(
+      `/edificios-by-bloques/${bloqueId}`
+    );
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};

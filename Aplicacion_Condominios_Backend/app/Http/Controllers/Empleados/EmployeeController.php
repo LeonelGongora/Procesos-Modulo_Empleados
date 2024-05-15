@@ -120,16 +120,28 @@ class EmployeeController extends Controller
                 ]);
             }
             else{
-                $asistencia = new Asistencia();
-                $asistencia-> id_empleado = $id;
-                $asistencia-> hora_entrada = $horaActual;
-                $asistencia -> save();
-
-                return response()->json([
-                    'status' => 200,
-                    'mensaje' => 'Ingreso realizado',
+                $horaMarcadaEntradaSalida = Asistencia::where('id_empleado',$id)
+                                                       ->where('fecha',$fechaActual)
+                                                       ->whereNotNull('hora_salida')
+                                                       ->first();
+                if($horaMarcadaEntradaSalida){
+                    return response()->json([
+                        'status' => 200,
+                        'mensaje' => 'Ya marco entrada y salida',
+                    ]);
+                }
+                else{
+                    $asistencia = new Asistencia();
+                    $asistencia-> id_empleado = $id;
+                    $asistencia-> hora_entrada = $horaActual;
+                    $asistencia -> save();
     
-                ]);
+                    return response()->json([
+                        'status' => 200,
+                        'mensaje' => 'Ingreso realizado',
+                    ]);
+                }
+
             }
         }
         else{

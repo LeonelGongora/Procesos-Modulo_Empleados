@@ -17,3 +17,14 @@ export const getAllBloques = async (): Promise<Bloque[]> => {
     return [];
   }
 };
+
+export const getBloqueById = async (
+  bloqueId: number
+): Promise<Bloque | null> => {
+  try {
+    const response: AxiosResponse = await api.get(`/bloque/${bloqueId}`);
+    return response.data;
+  } catch (error) {
+    return null;
+  }
+};

@@ -88,7 +88,6 @@ function EmployeeRegister() {
         data.append("ci", values.ci);
         data.append("estado_contrato", "Sin contrato");
         const res = await axios.post(`http://127.0.0.1:8000/api/add_employee`, data);
-        Swal.fire('Registro con exito','','success');
         window.location.href = "./";
     }
     

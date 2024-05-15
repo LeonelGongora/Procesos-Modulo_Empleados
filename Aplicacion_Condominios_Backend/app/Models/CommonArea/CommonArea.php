@@ -2,6 +2,7 @@
 
 namespace App\Models\CommonArea;
 
+use App\Models\Cobro_Servicios\EquipamientosModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,7 +21,7 @@ class CommonArea extends Model
 
     public function equipments()
     {
-        return $this->hasMany(Equipment::class, 'id_common_area');
+        return $this->hasMany(EquipamientosModel::class, 'id_common_area');
     }
 
     public function schedules()
