@@ -35,6 +35,8 @@ import ControlRetrasos from "../empleados/pages/retrasos/control_retrasos";
 import ControlFaltas from "../empleados/pages/faltas/control_faltas";
 import InformacionFalta from "../empleados/pages/faltas/informacion_falta";
 import InformacionRetraso from "../empleados/pages/retrasos/informacion_retraso";
+import Beneficios from "../empleados/pages/beneficios/beneficios";
+import Areas from "../empleados/pages/areas/areas";
 
 import CommonAreasLayout from "../common-areas/CommonAreasLayout";
 import CreatePage from "../common-areas/dashboard/common-area/pages/create-page/CreatePage";
@@ -432,7 +434,22 @@ const appRoutes: RouteType[] = [
           displayText: "Control de faltas",
         },
       },
-
+      {
+        path: "/employees/area",
+        element: <Areas />,
+        state: "employee.analytics",
+        sidebarProps: {
+          displayText: "Registro de Areas",
+        },
+      },
+      {
+        path: "/employees/beneficio",
+        element: <Beneficios />,
+        state: "employee.analytics",
+        sidebarProps: {
+          displayText: "Registro de Beneficios",
+        },
+      },
       {
         path: "/employees/employeeEdit",
         element: <EmployeeEdit />,
